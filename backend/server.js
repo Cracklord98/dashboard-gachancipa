@@ -14,25 +14,30 @@ const PORT = process.env.PORT || 3002;
 
 // Allowed origins for CORS
 const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:5173',
+  "http://localhost:3000",
+  "http://localhost:5173",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
 // Middleware
-app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.some(allowed => origin?.includes(allowed))) {
-      callback(null, true);
-    } else {
-      callback(null, true); // Allow all in production, or customize as needed
-    }
-  },
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (mobile apps, Postman, etc.)
+      if (!origin) return callback(null, true);
+
+      if (
+        allowedOrigins.indexOf(origin) !== -1 ||
+        allowedOrigins.some((allowed) => origin?.includes(allowed))
+      ) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Allow all in production, or customize as needed
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // Request logging middleware
