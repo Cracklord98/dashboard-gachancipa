@@ -1,0 +1,63 @@
+/* Tailwind directives - warnings are expected and normal */
+/* postcss-loader will process these correctly */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .metric-card {
+    @apply transition-all duration-300 backdrop-blur-lg;
+  }
+
+  .metric-card:hover {
+    @apply -translate-y-0.5 shadow-xl;
+  }
+
+  .chart-container {
+    @apply bg-white/80 backdrop-blur-lg border border-white/20 rounded-xl shadow-lg p-6;
+  }
+
+  .progress-bar {
+    @apply bg-gradient-to-r from-blue-600 to-green-500 rounded h-2 transition-all duration-1000 ease-in-out;
+  }
+
+  .status-high {
+    @apply text-green-600 font-semibold;
+  }
+
+  .status-medium {
+    @apply text-yellow-600 font-semibold;
+  }
+
+  .status-low {
+    @apply text-red-600 font-semibold;
+  }
+
+  .filter-btn {
+    @apply px-4 py-2 rounded-lg border transition-all duration-300;
+  }
+
+  .filter-btn.active {
+    @apply bg-blue-600 text-white border-blue-600;
+  }
+
+  .nav-link {
+    @apply px-4 py-2 rounded-lg transition-colors duration-200;
+  }
+
+  .nav-link:hover {
+    @apply bg-white/10;
+  }
+
+  .nav-link.active {
+    @apply bg-white text-blue-600 font-semibold;
+  }
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fafbfc;
+  min-height: 100vh;
+}
