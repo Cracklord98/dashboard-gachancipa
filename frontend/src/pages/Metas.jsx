@@ -10,6 +10,7 @@ export default function Metas() {
   const [selectedEvaluations, setSelectedEvaluations] = useState([]);
   const [selectedEstados, setSelectedEstados] = useState([]);
   const [selectedResponsables, setSelectedResponsables] = useState([]);
+  const [selectedMetasProducto, setSelectedMetasProducto] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Get unique programs
@@ -34,6 +35,19 @@ export default function Metas() {
     return uniqueResponsables.sort();
   }, [data]);
 
+  // Get unique metas de producto
+  const metasProducto = useMemo(() => {
+    if (!data?.metas) return [];
+    const uniqueMetasProducto = [
+      ...new Set(
+        data.metas
+          .map((meta) => meta.metaProducto)
+          .filter((m) => m && m.trim() !== "")
+      ),
+    ];
+    return uniqueMetasProducto.sort();
+  }, [data]);
+
   // Filter metas
   const filteredMetas = useMemo(() => {
     if (!data?.metas) return [];
@@ -51,19 +65,23 @@ export default function Metas() {
       const matchesResponsable =
         selectedResponsables.length === 0 ||
         selectedResponsables.includes(meta.dependenciaResponsable);
+      const matchesMetaProducto =
+        selectedMetasProducto.length === 0 ||
+        selectedMetasProducto.includes(meta.metaProducto);
       const matchesSearch =
         meta.indicador.toLowerCase().includes(searchTerm.toLowerCase()) ||
         meta.programa.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (meta.nombre &&
           meta.nombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (meta.meta &&
-          meta.meta.toLowerCase().includes(searchTerm.toLowerCase()));
+        (meta.metaProducto &&
+          meta.metaProducto.toLowerCase().includes(searchTerm.toLowerCase()));
 
       return (
         matchesProgram &&
         matchesEvaluation &&
         matchesEstado &&
         matchesResponsable &&
+        matchesMetaProducto &&
         matchesSearch
       );
     });
@@ -73,6 +91,7 @@ export default function Metas() {
     selectedEvaluations,
     selectedEstados,
     selectedResponsables,
+    selectedMetasProducto,
     searchTerm,
   ]);
 
@@ -175,6 +194,7 @@ export default function Metas() {
               selectedEvaluations.length > 0 ||
               selectedEstados.length > 0 ||
               selectedResponsables.length > 0 ||
+              selectedMetasProducto.length > 0 ||
               searchTerm) && (
               <button
                 onClick={() => {
@@ -182,6 +202,7 @@ export default function Metas() {
                   setSelectedEvaluations([]);
                   setSelectedEstados([]);
                   setSelectedResponsables([]);
+                  setSelectedMetasProducto([]);
                   setSearchTerm("");
                 }}
                 className="px-4 py-2 bg-error text-white rounded-lg hover:bg-error/90 transition-colors font-medium shadow-sm"
@@ -196,7 +217,7 @@ export default function Metas() {
             <div className="relative">
               <input
                 type="text"
-                placeholder="🔎 Buscar por nombre, indicador, programa o dependencia..."
+                placeholder="Buscar por nombre, indicador, programa o meta de producto..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-5 py-3 pl-12 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-accent focus:border-accent transition-all text-base shadow-sm"
@@ -216,13 +237,21 @@ export default function Metas() {
           </div>
 
           {/* Multi-Select Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <MultiSelectFilter
               label="Programa"
               icon="📊"
               options={programs}
               selectedValues={selectedPrograms}
               onChange={setSelectedPrograms}
+            />
+
+            <MultiSelectFilter
+              label="Meta de Producto"
+              icon="🎯"
+              options={metasProducto}
+              selectedValues={selectedMetasProducto}
+              onChange={setSelectedMetasProducto}
             />
 
             <MultiSelectFilter
@@ -272,11 +301,17 @@ export default function Metas() {
               {(selectedPrograms.length > 0 ||
                 selectedEvaluations.length > 0 ||
                 selectedEstados.length > 0 ||
-                selectedResponsables.length > 0) && (
+                selectedResponsables.length > 0 ||
+                selectedMetasProducto.length > 0) && (
                 <div className="flex gap-2 flex-wrap">
                   {selectedPrograms.length > 0 && (
                     <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
                       📊 {selectedPrograms.length} programas
+                    </span>
+                  )}
+                  {selectedMetasProducto.length > 0 && (
+                    <span className="px-3 py-1 bg-cyan-50 text-cyan-700 rounded-full text-xs font-medium">
+                      🎯 {selectedMetasProducto.length} metas
                     </span>
                   )}
                   {selectedEvaluations.length > 0 && (
