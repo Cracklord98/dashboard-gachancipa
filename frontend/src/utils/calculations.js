@@ -6,6 +6,24 @@ export function formatNumber(num) {
 }
 
 /**
+ * Format number as Colombian Peso (COP) currency
+ * Muestra el formato: $1.234.567 (pesos colombianos)
+ */
+export function formatCurrency(num) {
+  return (
+    new Intl.NumberFormat("es-CO", {
+      style: "currency",
+      currency: "COP",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })
+      .format(num)
+      .replace("COP", "")
+      .trim() + " COP"
+  );
+}
+
+/**
  * Calculate percentage
  */
 export function calculatePercentage(value, total) {

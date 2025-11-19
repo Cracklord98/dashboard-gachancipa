@@ -5,7 +5,7 @@ import MetricCard from "../components/MetricCard";
 import PerformanceChart from "../components/PerformanceChart";
 import DistributionChart from "../components/DistributionChart";
 import ProgramsTable from "../components/ProgramsTable";
-import { formatNumber } from "../utils/calculations";
+import { formatNumber, formatCurrency } from "../utils/calculations";
 
 export default function Dashboard() {
   const { data, loading, error } = useMetasData();
@@ -44,10 +44,10 @@ export default function Dashboard() {
         <div className="container mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold text-white">
-              📊 Dashboard Plan Indicativo 2025
+              📊 DASHBOARD PLAN DE DESARROLLO 2024-2027 GACHANCIPA
             </h1>
             <p class="text-gray-600 mt-1">
-              Secretaría de Gachancipá - Avance de metas
+              ALCALDIA DE GACHANCIPA, CUNDINAMARCA
             </p>
             <nav className="flex gap-2">
               <Link to="/" className="nav-link active">
@@ -71,9 +71,9 @@ export default function Dashboard() {
             icon="🎯"
             color="accent"
             progress={metrics?.cumplimiento_global}
-            subtitle={`${formatNumber(metrics?.total_ejec)} / ${formatNumber(
-              metrics?.total_plan
-            )}`}
+            subtitle={`${formatCurrency(
+              metrics?.total_ejec
+            )} / ${formatCurrency(metrics?.total_plan)}`}
           />
           <MetricCard
             title="T3 - Trimestre 3"
@@ -81,9 +81,9 @@ export default function Dashboard() {
             icon="📊"
             color="warning"
             progress={metrics?.cumplimiento_t3}
-            subtitle={`${formatNumber(metrics?.total_t3_ejec)} / ${formatNumber(
-              metrics?.total_t3_plan
-            )}`}
+            subtitle={`${formatCurrency(
+              metrics?.total_t3_ejec
+            )} / ${formatCurrency(metrics?.total_t3_plan)}`}
           />
           <MetricCard
             title="T4 - Trimestre 4"
@@ -91,9 +91,9 @@ export default function Dashboard() {
             icon="📉"
             color="error"
             progress={metrics?.cumplimiento_t4}
-            subtitle={`${formatNumber(metrics?.total_t4_ejec)} / ${formatNumber(
-              metrics?.total_t4_plan
-            )}`}
+            subtitle={`${formatCurrency(
+              metrics?.total_t4_ejec
+            )} / ${formatCurrency(metrics?.total_t4_plan)}`}
           />
         </div>
 

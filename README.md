@@ -322,9 +322,14 @@ npm run dev
 
 ## 🌐 URLs de Acceso
 
+### Desarrollo Local
 - **Frontend:** <http://localhost:3000>
 - **Backend API:** <http://localhost:3002>
 - **Health Check:** <http://localhost:3002/health>
+
+### Producción
+- **Backend API:** <https://dashboard-gachancipa.onrender.com>
+- **Health Check:** <https://dashboard-gachancipa.onrender.com/health>
 
 ## 📡 API Endpoints
 

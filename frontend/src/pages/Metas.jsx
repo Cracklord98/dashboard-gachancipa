@@ -2,13 +2,14 @@ import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useMetasData } from "../hooks/useMetasData";
 import MetaCard from "../components/MetaCard";
+import MultiSelectFilter from "../components/MultiSelectFilter";
 
 export default function Metas() {
   const { data, loading, error } = useMetasData();
-  const [selectedProgram, setSelectedProgram] = useState("all");
-  const [selectedEvaluation, setSelectedEvaluation] = useState("all");
-  const [selectedEstado, setSelectedEstado] = useState("all");
-  const [selectedResponsable, setSelectedResponsable] = useState("all");
+  const [selectedPrograms, setSelectedPrograms] = useState([]);
+  const [selectedEvaluations, setSelectedEvaluations] = useState([]);
+  const [selectedEstados, setSelectedEstados] = useState([]);
+  const [selectedResponsables, setSelectedResponsables] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Get unique programs
@@ -39,17 +40,24 @@ export default function Metas() {
 
     return data.metas.filter((meta) => {
       const matchesProgram =
-        selectedProgram === "all" || meta.programa === selectedProgram;
+        selectedPrograms.length === 0 ||
+        selectedPrograms.includes(meta.programa);
       const matchesEvaluation =
-        selectedEvaluation === "all" || meta.evaluacion === selectedEvaluation;
+        selectedEvaluations.length === 0 ||
+        selectedEvaluations.includes(meta.evaluacion);
       const matchesEstado =
-        selectedEstado === "all" || meta.estadoProyecto === selectedEstado;
+        selectedEstados.length === 0 ||
+        selectedEstados.includes(meta.estadoProyecto);
       const matchesResponsable =
-        selectedResponsable === "all" ||
-        meta.dependenciaResponsable === selectedResponsable;
+        selectedResponsables.length === 0 ||
+        selectedResponsables.includes(meta.dependenciaResponsable);
       const matchesSearch =
         meta.indicador.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        meta.programa.toLowerCase().includes(searchTerm.toLowerCase());
+        meta.programa.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (meta.nombre &&
+          meta.nombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (meta.meta &&
+          meta.meta.toLowerCase().includes(searchTerm.toLowerCase()));
 
       return (
         matchesProgram &&
@@ -61,10 +69,10 @@ export default function Metas() {
     });
   }, [
     data,
-    selectedProgram,
-    selectedEvaluation,
-    selectedEstado,
-    selectedResponsable,
+    selectedPrograms,
+    selectedEvaluations,
+    selectedEstados,
+    selectedResponsables,
     searchTerm,
   ]);
 
@@ -158,121 +166,137 @@ export default function Metas() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-xl p-6 mb-8 shadow-lg border border-gray-200">
-          <h2 className="text-xl font-bold text-primary mb-4">🔍 Filtros</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            {/* Search */}
-            <div>
-              <label className="block text-sm font-medium text-primary mb-2">
-                Buscar
-              </label>
-              <input
-                type="text"
-                placeholder="Buscar por indicador o programa..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:border-transparent"
-              />
-            </div>
-
-            {/* Program Filter */}
-            <div>
-              <label className="block text-sm font-medium text-primary mb-2">
-                Programa
-              </label>
-              <select
-                value={selectedProgram}
-                onChange={(e) => setSelectedProgram(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:border-transparent"
-              >
-                <option value="all">Todos los programas</option>
-                {programs.map((program) => (
-                  <option key={program} value={program}>
-                    {program}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Evaluation Filter */}
-            <div>
-              <label className="block text-sm font-medium text-primary mb-2">
-                Evaluación
-              </label>
-              <select
-                value={selectedEvaluation}
-                onChange={(e) => setSelectedEvaluation(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:border-transparent"
-              >
-                <option value="all">Todas las evaluaciones</option>
-                <option value="Avance Alto">Avance Alto</option>
-                <option value="Avance Medio">Avance Medio</option>
-                <option value="Avance Bajo">Avance Bajo</option>
-                <option value="Sin Programación">Sin Programación</option>
-              </select>
-            </div>
-
-            {/* Estado Programado Filter */}
-            <div>
-              <label className="block text-sm font-medium text-primary mb-2">
-                Estado
-              </label>
-              <select
-                value={selectedEstado}
-                onChange={(e) => setSelectedEstado(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:border-transparent"
-              >
-                <option value="all">Todos los estados</option>
-                <option value="PROGRAMADO">Programado</option>
-                <option value="NO PROGRAMADO">No Programado</option>
-              </select>
-            </div>
-
-            {/* Responsable Filter */}
-            <div>
-              <label className="block text-sm font-medium text-primary mb-2">
-                Responsable
-              </label>
-              <select
-                value={selectedResponsable}
-                onChange={(e) => setSelectedResponsable(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-accent focus:border-transparent"
-              >
-                <option value="all">Todos los responsables</option>
-                {responsables.map((responsable) => (
-                  <option key={responsable} value={responsable}>
-                    {responsable}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Active Filters Summary */}
-          <div className="mt-4 flex items-center gap-2 text-secondary text-sm">
-            <span>
-              Mostrando {filteredMetas.length} de {data?.metas?.length || 0}{" "}
-              metas
-            </span>
-            {(selectedProgram !== "all" ||
-              selectedEvaluation !== "all" ||
-              selectedEstado !== "all" ||
-              selectedResponsable !== "all" ||
+        <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 mb-8 shadow-lg border border-gray-200">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
+              🔍 Filtros de Búsqueda
+            </h2>
+            {(selectedPrograms.length > 0 ||
+              selectedEvaluations.length > 0 ||
+              selectedEstados.length > 0 ||
+              selectedResponsables.length > 0 ||
               searchTerm) && (
               <button
                 onClick={() => {
-                  setSelectedProgram("all");
-                  setSelectedEvaluation("all");
-                  setSelectedEstado("all");
-                  setSelectedResponsable("all");
+                  setSelectedPrograms([]);
+                  setSelectedEvaluations([]);
+                  setSelectedEstados([]);
+                  setSelectedResponsables([]);
                   setSearchTerm("");
                 }}
-                className="ml-4 px-3 py-1 bg-accent text-white rounded-lg hover:bg-accent/80 transition-colors"
+                className="px-4 py-2 bg-error text-white rounded-lg hover:bg-error/90 transition-colors font-medium shadow-sm"
               >
-                Limpiar filtros
+                🗑️ Limpiar todo
               </button>
             )}
+          </div>
+
+          {/* Search Bar */}
+          <div className="mb-6">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="🔎 Buscar por nombre, indicador, programa o dependencia..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-5 py-3 pl-12 rounded-lg border-2 border-gray-200 focus:ring-2 focus:ring-accent focus:border-accent transition-all text-base shadow-sm"
+              />
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-xl">
+                🔍
+              </span>
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Multi-Select Filters */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <MultiSelectFilter
+              label="Programa"
+              icon="📊"
+              options={programs}
+              selectedValues={selectedPrograms}
+              onChange={setSelectedPrograms}
+            />
+
+            <MultiSelectFilter
+              label="Evaluación"
+              icon="⭐"
+              options={[
+                "Avance Alto",
+                "Avance Medio",
+                "Avance Bajo",
+                "Sin Programación",
+              ]}
+              selectedValues={selectedEvaluations}
+              onChange={setSelectedEvaluations}
+            />
+
+            <MultiSelectFilter
+              label="Estado"
+              icon="📌"
+              options={["PROGRAMADO", "NO PROGRAMADO"]}
+              selectedValues={selectedEstados}
+              onChange={setSelectedEstados}
+            />
+
+            <MultiSelectFilter
+              label="Responsable"
+              icon="👥"
+              options={responsables}
+              selectedValues={selectedResponsables}
+              onChange={setSelectedResponsables}
+            />
+          </div>
+
+          {/* Active Filters Summary */}
+          <div className="mt-6 p-4 bg-white rounded-lg border-l-4 border-accent shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">📋</span>
+                <div>
+                  <p className="text-sm text-secondary font-medium">
+                    Resultados de búsqueda
+                  </p>
+                  <p className="text-lg font-bold text-primary">
+                    {filteredMetas.length} de {data?.metas?.length || 0} metas
+                  </p>
+                </div>
+              </div>
+              {(selectedPrograms.length > 0 ||
+                selectedEvaluations.length > 0 ||
+                selectedEstados.length > 0 ||
+                selectedResponsables.length > 0) && (
+                <div className="flex gap-2 flex-wrap">
+                  {selectedPrograms.length > 0 && (
+                    <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+                      📊 {selectedPrograms.length} programas
+                    </span>
+                  )}
+                  {selectedEvaluations.length > 0 && (
+                    <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium">
+                      ⭐ {selectedEvaluations.length} evaluaciones
+                    </span>
+                  )}
+                  {selectedEstados.length > 0 && (
+                    <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium">
+                      📌 {selectedEstados.length} estados
+                    </span>
+                  )}
+                  {selectedResponsables.length > 0 && (
+                    <span className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-medium">
+                      👥 {selectedResponsables.length} responsables
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
